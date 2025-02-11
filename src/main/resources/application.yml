@@ -16,7 +16,7 @@ spring:
   properties:
     hibernate:
       dialect: org.hibernate.dialect.MySQLDialect # Dialect cho MySQL
-#  jwt:
-#    valid-duration: 10 # 60s
-#    refreshable-duration: 120 #120s
-#    signerKey: "fjJn9RdiXSFp79TA9UhegB6WNs4PsnHO9vxJJMn2oPCniZXzHk8rLKo0UJbl41PU"
+  jwt:
+    valid-duration: 10 # 60s
+    refreshable-duration: 1200 #1200s
+    signerKey: "fjJn9RdiXSFp79TA9UhegB6WNs4PsnHO9vxJJMn2oPCniZXzHk8rLKo0UJbl41PU"

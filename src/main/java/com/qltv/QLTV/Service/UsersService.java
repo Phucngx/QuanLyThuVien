@@ -13,6 +13,9 @@ import com.qltv.QLTV.Repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContext;
@@ -49,7 +52,7 @@ public class UsersService {
 
     @PreAuthorize("hasRole('ADMIN')")
     public UserReponse updateUser(String id, UpdateUserRequest request){
-        Users user = userRepository.findById(id).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND));
+        Users user = userRepository.findById(id).orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND));
         userMapper.updateUser(user, request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         List<Roles> roles = roleRepository.findAllByRoleNameIn(request.getRoles());
@@ -63,13 +66,19 @@ public class UsersService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserReponse> getAllUser(){
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+    public Page<UserReponse> getAllUser(int page, int size){
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return userRepository.findAll(pageable).map(userMapper::toUserResponse);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Users> getAllUsers(){
+        return userRepository.findAll();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public UserReponse getDetailUser(String id){
-        return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND)));
+        return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new ApplicationException(ErrorCode.USER_NOT_FOUND)));
     }
 
     @PostAuthorize("returnObject.userName == authentication.name")
@@ -77,6 +86,12 @@ public class UsersService {
         SecurityContext context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         return userMapper.toUserResponse(userRepository.findByUserName(username).orElseThrow(() -> new ApplicationException(ErrorCode.USERNAME_NOT_EXISTS)));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<UserReponse> search(String keywords, int page, int size){
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return userRepository.searchUsers(keywords, pageable).map(userMapper::toUserResponse);
     }
 
 }

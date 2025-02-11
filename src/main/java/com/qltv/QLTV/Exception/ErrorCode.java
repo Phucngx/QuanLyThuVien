@@ -12,6 +12,11 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     UNCATEGORIZED(1006, "Uncategorized", HttpStatus.INTERNAL_SERVER_ERROR),
     NOT_FOUND(1005, "Not found", HttpStatus.BAD_REQUEST),
+    USER_NOT_FOUND(1005, "User not found", HttpStatus.BAD_REQUEST),
+    BOOK_NOT_FOUND(1005, "Book not found", HttpStatus.BAD_REQUEST),
+    ARTICLE_NOT_FOUND(1005, "Article not found", HttpStatus.BAD_REQUEST),
+    COMMENT_NOT_FOUND(1005, "Comment not found", HttpStatus.BAD_REQUEST),
+    BORROW_BOOK_NOT_FOUND(1005, "Borrow book not found", HttpStatus.BAD_REQUEST),
     NOT_EMPTY(1004, "This field is not empty", HttpStatus.BAD_REQUEST),
     NOT_NULL(1004, "This field is not null", HttpStatus.BAD_REQUEST),
     NAME_EXISTS(1001, "Name is already exist", HttpStatus.BAD_REQUEST),
@@ -25,6 +30,7 @@ public enum ErrorCode {
     UNAUTHORIZED(1008, "You don't have permission", HttpStatus.FORBIDDEN),
     SIGN_IN_FAIL(1009, "Log-in fail", HttpStatus.BAD_REQUEST),
     INVALID_DOB(1004, "Age must be at least {min}", HttpStatus.BAD_REQUEST),
+    GENRE_NOT_FOUND(1004, "Genre is not found", HttpStatus.BAD_REQUEST),
     ;
     final int code;
     final String message;

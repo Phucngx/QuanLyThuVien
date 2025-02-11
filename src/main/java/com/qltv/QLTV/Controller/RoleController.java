@@ -4,12 +4,14 @@ import com.qltv.QLTV.DTO.Request.RoleRequest;
 import com.qltv.QLTV.DTO.Response.ApiResponse;
 import com.qltv.QLTV.DTO.Response.RoleGetResponse;
 import com.qltv.QLTV.DTO.Response.RoleResponse;
+import com.qltv.QLTV.DTO.Response.UserReponse;
 import com.qltv.QLTV.Entity.Roles;
 import com.qltv.QLTV.Service.RoleService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,14 +32,14 @@ public class RoleController {
     }
 
     @GetMapping(value = "get-all")
-    public ApiResponse<List<RoleGetResponse>> getAllRole(){
-        return ApiResponse.<List<RoleGetResponse>>builder()
+    public ApiResponse<Page<RoleGetResponse>> getAllRole(@RequestParam(name = "page") int page, @RequestParam(name = "size") int size){
+        return ApiResponse.<Page<RoleGetResponse>>builder()
                 .code(1000)
-                .data(roleService.getAllRole())
+                .data(roleService.getAllRole(page, size))
                 .build();
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping(value = "/update/{id}")
     public ApiResponse<RoleResponse> updateRole(@PathVariable String id, @RequestBody RoleRequest request){
         return ApiResponse.<RoleResponse>builder()
                 .code(1000)
@@ -45,7 +47,7 @@ public class RoleController {
                 .build();
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping(value = "/delete/{id}")
     public ApiResponse<String> deleteRole(@PathVariable String id){
         roleService.deleteRole(id);
         return ApiResponse.<String>builder()
@@ -53,5 +55,23 @@ public class RoleController {
                 .data("Permission has been delete")
                 .build();
     }
+
+    @GetMapping(value = "/get-detail/{id}")
+    public ApiResponse<RoleResponse> getDetail(@PathVariable String id){
+        return ApiResponse.<RoleResponse>builder()
+                .code(1000)
+                .data(roleService.getDetailRole(id))
+                .build();
+    }
+
+    @PostMapping(value = "/search")
+    public ApiResponse<Page<RoleResponse>> search(@RequestParam(name = "roleName") String roleName , @RequestParam(name = "page") int page, @RequestParam(name = "size") int size){
+        Page<RoleResponse> rolePage = roleService.search(roleName, page, size);
+        return ApiResponse.<Page<RoleResponse>>builder()
+                .code(1000)
+                .data(rolePage)
+                .build();
+    }
+
 
 }

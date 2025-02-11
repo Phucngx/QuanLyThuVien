@@ -12,6 +12,10 @@ import com.qltv.QLTV.Repository.RoleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -25,6 +29,7 @@ public class RoleService {
     RoleMapper roleMapper;
     PermissionRepository permissionRepository;
 
+    @PreAuthorize("hasRole('ADMIN')")
     public RoleResponse createRole(RoleRequest request){
         if(roleRepository.existsByRoleName(request.getRoleName())){
             throw new ApplicationException(ErrorCode.NAME_EXISTS);
@@ -35,6 +40,7 @@ public class RoleService {
         return roleMapper.toRoleResponse(roleRepository.save(roles));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public RoleResponse updateRole(String id, RoleRequest request){
         Roles roles = roleRepository.findById(id).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND));
         roleMapper.updateRole(roles, request);
@@ -43,14 +49,28 @@ public class RoleService {
         return roleMapper.toRoleResponse(roleRepository.save(roles));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteRole(String id){
         roleRepository.deleteById(id);
     }
 
-    public List<RoleGetResponse> getAllRole(){
-        return roleRepository.findAll()
-                .stream()
-                .map(roleMapper::toRoleGetResponse)
-                .toList();
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<RoleGetResponse> getAllRole(int page, int size){
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return roleRepository.findAll(pageable)
+                .map(roleMapper::toRoleGetResponse);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<RoleResponse> search(String roleName, int page, int size){
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return roleRepository.search(roleName, pageable)
+                .map(roleMapper::toRoleResponse);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public RoleResponse getDetailRole(String id){
+        Roles role = roleRepository.findById(id).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND));
+        return roleMapper.toRoleResponse(role);
     }
 }

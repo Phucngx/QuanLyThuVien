@@ -1,0 +1,18 @@
+package com.qltv.QLTV.Repository;
+
+import com.qltv.QLTV.Entity.Books;
+import com.qltv.QLTV.Entity.Genres;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+import java.util.Optional;
+
+@Repository
+public interface BookRepository extends JpaRepository<Books, String> {
+    Optional<Books> findByTitle(String title);
+
+    @Query(value = "select * from books where title = ?1", countQuery = "select count(*) from books where title = ?1", nativeQuery = true)
+    Page<Books> search(String title, Pageable pageable);
+}

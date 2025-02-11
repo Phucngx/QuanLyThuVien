@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,4 +49,13 @@ public class Users {
             joinColumns = @JoinColumn(name = "UserId"),
             inverseJoinColumns = @JoinColumn(name = "RoleId"))
     Set<Roles> roles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<BorrowBooks> borrowBooks;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<Articles> articles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    List<Comments> comments;
 }
